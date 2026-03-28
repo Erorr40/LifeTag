@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 export default function Dashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
+  const [linkedTag, setLinkedTag] = useState<any>(null);
 
   useEffect(() => {
     let userName = 'New User';
@@ -13,6 +14,11 @@ export default function Dashboard() {
         if (storedUser) {
             const parsed = JSON.parse(storedUser);
             if (parsed && parsed.fullName) userName = parsed.fullName;
+        }
+
+        const tag = localStorage.getItem('linkedTag');
+        if (tag) {
+            setLinkedTag(JSON.parse(tag));
         }
     } catch(e) {}
 
@@ -141,9 +147,11 @@ export default function Dashboard() {
             {profile.templateType && (
               <p className="text-[10px] text-gray-500 font-medium bg-gray-50 px-2 py-0.5 border border-gray-100 rounded-md inline-block mt-1 ml-1">{profile.templateType}</p>
             )}
-          </div>
-        </div>
-
+              {linkedTag && (
+                <p className="text-[10px] text-green-600 font-medium bg-green-50 px-2 py-0.5 border border-green-100 rounded-md inline-block mt-1 ml-1 flex-items-center gap-1">
+                  Tag Active
+                </p>
+              )}
         {/* Sections */}
         <div className="flex flex-col gap-3">
           

@@ -6,6 +6,7 @@ export default function Settings() {
   const navigate = useNavigate();
   const [pinEnabled, setPinEnabled] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [linkedTag, setLinkedTag] = useState<any>(null);
 
   useEffect(() => {
     let userName = 'Unknown User';
@@ -16,6 +17,11 @@ export default function Settings() {
             const parsed = JSON.parse(storedUser);
             if (parsed && parsed.fullName) userName = parsed.fullName;
             if (parsed && parsed.email) userEmail = parsed.email;
+        }
+        
+        const tag = localStorage.getItem('linkedTag');
+        if (tag) {
+            setLinkedTag(JSON.parse(tag));
         }
     } catch(e) {}
 
@@ -86,14 +92,34 @@ export default function Settings() {
 
           {/* Devices */}
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col gap-4">
-            <div className="flex items-center gap-2 text-gray-800 font-semibold text-sm">
-              <Watch size={16} className="text-blue-500" /> My Tags
-            </div>
-            <button onClick={() => navigate('/link-tag')} className="bg-blue-50 text-blue-600 font-semibold py-2.5 rounded-xl border border-blue-100 hover:bg-blue-100 transition text-sm">
-              + Link New Tag
-            </button>
-          </div>
-
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-gray-800 font-semibold text-sm">
+                  <Watch size={16} className="text-blue-500" /> My Tags
+                </div>
+                {linkedTag && (
+                  <button onClick={() => navigate('/link-tag')} className="text-[10px] text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded-lg">
+                    + Add Another
+                  </button>
+                )}
+              </div>
+              
+              {linkedTag ? (
+                <div className="flex items-center justify-between bg-green-50 border border-green-200 p-3 rounded-xl transition-all">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-800">{linkedTag.type || 'Smart Bracelet'}</span>
+                    <span className="text-xs text-green-600 font-medium mt-0.5 flexItems-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span> Active - ID: {linkedTag.id}
+                    </span>
+                  </div>
+                  <button onClick={() => { localStorage.removeItem('linkedTag'); setLinkedTag(null); }} className="text-xs text-red-500 font-semibold bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100 transition-colors">
+                    Unlink
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => navigate('/link-tag')} className="bg-blue-50 text-blue-600 font-semibold py-2.5 rounded-xl border border-blue-100 hover:bg-blue-100 transition text-sm">
+                  + Link New Tag
+                </button>
+              )}
         </div>
       </div>
 
