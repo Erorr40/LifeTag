@@ -120,17 +120,18 @@ export default function Settings() {
                   + Link New Tag
                 </button>
               )}
+          </div>
         </div>
       </div>
 
       <div className="absolute bottom-6 w-full px-5 left-0">
-        <button 
-          onClick={() => navigate('/signin')}
-          className="w-full bg-gradient-to-t from-red-500 to-red-500 text-white font-semibold py-3.5 rounded-2xl shadow-lg border border-red-600 flex items-center justify-center gap-2 text-sm hover:opacity-90 transition-opacity"
-        >
-          <LogOut size={16} /> Log Out
-        </button>
-      </div>
+          <button
+            onClick={() => navigate('/signin')}
+            className="w-full bg-gradient-to-t from-red-500 to-red-500 text-white font-semibold py-3.5 rounded-2xl shadow-lg border border-red-600 flex items-center justify-center gap-2 text-sm hover:opacity-90 transition-opacity"
+          >
+            <LogOut size={16} /> Log Out
+          </button>
+        </div>
     </div>
   );
 }

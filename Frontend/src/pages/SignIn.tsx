@@ -17,7 +17,7 @@ export default function SignIn() {
       const data = await res.json();
       if (res.ok && data.success) {
         localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/choose-template');
+        navigate('/dashboard');
       } else {
         alert(data.message || 'Signin failed');
       }

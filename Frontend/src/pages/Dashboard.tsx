@@ -147,11 +147,14 @@ export default function Dashboard() {
             {profile.templateType && (
               <p className="text-[10px] text-gray-500 font-medium bg-gray-50 px-2 py-0.5 border border-gray-100 rounded-md inline-block mt-1 ml-1">{profile.templateType}</p>
             )}
-              {linkedTag && (
-                <p className="text-[10px] text-green-600 font-medium bg-green-50 px-2 py-0.5 border border-green-100 rounded-md inline-block mt-1 ml-1 flex-items-center gap-1">
-                  Tag Active
-                </p>
-              )}
+            {linkedTag && (
+              <p className="text-[10px] text-green-600 font-medium bg-green-50 px-2 py-0.5 border border-green-100 rounded-md inline-block mt-1 ml-1 flex-items-center gap-1">
+                Tag Active
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Sections */}
         <div className="flex flex-col gap-3">
           

@@ -51,6 +51,24 @@ function App() {
           </div>
         </div>
 
+        {/* Floating Credit Badge */}
+        <div className="fixed bottom-6 right-8 lg:bottom-10 lg:right-10 z-50 group">
+          {/* Animated glow effect behind the badge */}
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-orange-600 rounded-full blur opacity-30 group-hover:opacity-100 transition duration-500 group-hover:duration-200 animate-pulse"></div>
+          
+          {/* Actual Badge */}
+          <div className="relative flex items-center gap-2.5 bg-[#121212] px-6 py-3 rounded-full border border-gray-800/80 shadow-2xl transform group-hover:-translate-y-1 transition-all duration-300 cursor-default">
+            {/* Heart Icon Beating */}
+            <div className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+            </div>
+            
+            <span className="text-[11px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Created By</span>
+            <span className="text-sm font-black bg-gradient-to-r from-red-500 to-orange-500 text-transparent bg-clip-text">ERROR</span>
+          </div>
+        </div>
+
       </div>
     </BrowserRouter>
   );
