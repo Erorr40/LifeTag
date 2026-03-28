@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Shield, Layout, LogOut, Watch } from 'lucide-react';
+import { ArrowLeft, User, Layout, LogOut, Watch } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Settings() {
@@ -8,12 +8,29 @@ export default function Settings() {
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
+    let userName = 'Unknown User';
+    let userEmail = '';
+    try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (parsed && parsed.fullName) userName = parsed.fullName;
+            if (parsed && parsed.email) userEmail = parsed.email;
+        }
+    } catch(e) {}
+
     fetch('http://localhost:3001/api/profile')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.profile) {
-          setProfile(data.profile);
+          setProfile({ ...data.profile, fullName: data.profile.fullName || userName, email: userEmail });
+          setPinEnabled(!!data.profile.isPinProtected);
+        } else {
+            setProfile({ fullName: userName, email: userEmail });
         }
+      })
+      .catch(() => {
+          setProfile({ fullName: userName, email: userEmail });
       });
   }, []);
 
@@ -38,11 +55,11 @@ export default function Settings() {
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-gray-500 mb-1 ml-1">Name</label>
-              <input type="text" defaultValue={profile?.fullName || "Ahmed Hazem"} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 outline-none" />
+              <input type="text" value={profile?.fullName || "Loading..."} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 outline-none" />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-gray-500 mb-1 ml-1">Email</label>
-              <input type="email" defaultValue="user@example.com" readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 outline-none" />     
+              <input type="email" value={profile?.email || ""} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 outline-none" />
             </div>
             <div className="flex justify-between items-center text-sm text-gray-700 font-medium">
               <span>PIN Protection</span>
@@ -91,3 +108,4 @@ export default function Settings() {
     </div>
   );
 }
+

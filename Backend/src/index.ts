@@ -47,7 +47,7 @@ app.post('/api/signup', async (req, res) => {
     await user.save();
     res.json({ success: true, message: 'Signup successful', user });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error', error });
+    res.status(500).json({ success: false, message: 'Server error', error });   
   }
 });
 
@@ -58,28 +58,86 @@ app.post('/api/signin', async (req, res) => {
     if (user) {
       res.json({ success: true, message: 'Signin successful', user, token: 'dummy_token' });
     } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      res.status(401).json({ success: false, message: 'Invalid credentials' }); 
     }
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
+app.get('/api/medical-data/:userId', async (req, res) => {
+  try {
+     const profile = await Profile.findOne().sort({ _id: -1 }); // Get latest for demo
+     if (profile) {
+        res.json({ success: true, data: profile.medicalInfo || profile });
+     } else {
+        res.status(404).json({ success: false, message: 'Not found' });
+     }
+  } catch(e) {
+     res.status(500).json({ success: false });
+  }
+});
+
 app.post('/api/save-medical-data', async (req, res) => {
   try {
     const data = req.body;
-    
-    // For demo PIN update:
-    if (data.isPinProtected !== undefined && !data.fullName) {
+
+    // Direct dashboard update (has an _id or full fields)
+    if (data._id || (!data.templateType && data.fullName)) {
+       const latest = await Profile.findOne().sort({ _id: -1 });
+       if (latest) {
+          latest.fullName = data.fullName || latest.fullName;
+          latest.bloodType = data.bloodType !== undefined ? data.bloodType : latest.bloodType;
+          latest.medicalConditions = data.medicalConditions || latest.medicalConditions;
+          latest.medications = data.medications || latest.medications;
+          latest.allergies = data.allergies || latest.allergies;
+          latest.emergencyContacts = data.emergencyContacts || latest.emergencyContacts;
+          latest.notes = data.notes !== undefined ? data.notes : latest.notes;
+          await latest.save();
+          return res.json({ success: true, profile: latest });
+       } else {
+          const profile = new Profile(data);
+          await profile.save();
+          return res.json({ success: true, profile });
+       }
+    }
+
+    if (data.templateType) {
+        const newProfile = new Profile({
+           templateType: data.templateType,
+           fullName: data.fullName || 'Medical Profile',
+        });
+
+        if (data.templateType === 'Child') {
+           newProfile.allergies = data.notes ? [data.notes] : [];
+           newProfile.age = data.age?.toString() || '';
+           newProfile.emergencyContacts = data.emergencyContacts?.map((c: any) => ({ name: c.name, phone: c.phone || 'N/A', type: 'Parent' })) || [];
+        } else if (data.templateType === 'Medical' && data.data) {
+           newProfile.bloodType = data.data.bloodType;
+           newProfile.allergies = data.data.allergies ? [data.data.allergies] : [];
+           newProfile.medications = data.data.medications ? [data.data.medications] : [];
+           newProfile.medicalConditions = data.data.conditions ? [data.data.conditions] : [];
+           newProfile.emergencyContacts = data.data.emergencyContacts;
+           newProfile.notes = data.data.notes;
+        } else if (data.templateType === 'Custom') {
+           newProfile.customSections = data.customSections;
+        }
+
+        await newProfile.save();
+        return res.json({ success: true, profile: newProfile });
+    }
+
+    if (data.isPinProtected !== undefined) {
        const latest = await Profile.findOne().sort({ _id: -1 });
        if (latest) {
           latest.isPinProtected = data.isPinProtected;
-          latest.pin = data.pin;
+          if (data.pin) latest.pin = data.pin;
           await latest.save();
           return res.json({ success: true, message: 'PIN updated', profile: latest });
        }
     }
 
+    return res.status(400).json({ success: false, message: 'Invalid payload' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error', error });
   }
@@ -89,7 +147,7 @@ app.get('/api/profile', async (req, res) => {
   try {
     const profile = await Profile.findOne().sort({ _id: -1 }); // Get latest for demo
     if (profile) res.json({ success: true, profile });
-    else res.status(404).json({ success: false, message: 'Not found' });
+    else res.status(404).json({ success: false, message: 'Not found' });        
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

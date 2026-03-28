@@ -16,6 +16,7 @@ export default function SignUp() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/choose-template');
       } else {
         alert(data.message || 'Signup failed');

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Smartphone, CheckCircle, ArrowLeft, Watch, MapPin } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Smartphone, CheckCircle, ArrowLeft, Watch,  } from 'lucide-react';
+import { useState } from 'react';
 
 export default function LinkTag() {
   const navigate = useNavigate();
@@ -10,6 +10,11 @@ export default function LinkTag() {
     setStatus('scanning');
     setTimeout(() => {
       setStatus('linked');
+      localStorage.setItem('linkedTag', JSON.stringify({ 
+        id: 'LT-' + Math.floor(1000 + Math.random() * 9000), 
+        type: 'Smart Bracelet', 
+        date: new Date().toISOString() 
+      }));
     }, 2500);
   };
 

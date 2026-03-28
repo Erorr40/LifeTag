@@ -30,11 +30,22 @@ export default function ChildInfo() {
   };
 
   const handleSave = async () => {
+    let userName = 'Medical Profile';
+    try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (parsed && parsed.fullName) userName = parsed.fullName;
+        }
+    } catch(q) {}
+
+    const payload = { ...formData, fullName: userName };
+
     try {
       await fetch('http://localhost:3001/api/save-medical-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       navigate('/pin-protection');
     } catch (e) {

@@ -16,7 +16,7 @@ export default function SignIn() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // Assume context holds token/user in real app
+        localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/choose-template');
       } else {
         alert(data.message || 'Signin failed');

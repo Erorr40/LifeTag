@@ -7,14 +7,23 @@ export default function PublicProfile() {
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
+    let userName = 'Unknown User';
+    try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (parsed && parsed.fullName) userName = parsed.fullName;
+        }
+    } catch(e) {}
+
     fetch('http://localhost:3001/api/profile')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.profile) {
-          setProfile(data.profile);
+          setProfile({ ...data.profile, fullName: data.profile.fullName || userName });
         } else {
           setProfile({
-            fullName: 'Ahmed Hazem',
+            fullName: userName,
             bloodType: 'A+',
             medicalConditions: ['Diabetes', 'Asthma'],
             medications: ['Ibuprofen', 'Panadol'],
@@ -26,7 +35,7 @@ export default function PublicProfile() {
       })
       .catch(() => {
         setProfile({
-            fullName: 'Ahmed Hazem',
+            fullName: userName,
             bloodType: 'A+',
             medicalConditions: ['Diabetes', 'Asthma'],
             medications: ['Ibuprofen', 'Panadol'],
